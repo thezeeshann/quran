@@ -1,8 +1,38 @@
-# quran-rs
+<p align="center"><img src="crates/app/assets/icon-256.png" width="128" height="128" alt="Quran app icon"></p>
 
+<h1 align="center">Quran</h1>
+
+<p align="center">
 A fast, native Quran reader for the Mac, written in Rust: the Uthmani text beautifully typeset,
-read by **surah** or by **juz**, with translations beneath each ayah, instant search in Arabic and
+read by <b>surah</b> or by <b>juz</b>, with translations beneath each ayah, instant search in Arabic and
 English, and highlights, notes, bookmarks, reading history and plans kept on your computer.
+</p>
+
+<p align="center">
+<a href="https://github.com/thezeeshann/quran/releases/latest/download/Quran.dmg"><b>Download for Mac</b></a>
+· Apple Silicon and Intel · macOS 11 or later · Free
+</p>
+
+![Quran, Al-Fatihah in the light theme](docs/screenshots/reader-light.jpg)
+
+## Download
+
+Get **Quran.dmg** from the [latest release](https://github.com/thezeeshann/quran/releases/latest),
+open it and drag **Quran** into **Applications**. The app isn't notarized by Apple yet, so the
+first time you open it macOS says it can't verify the developer: click **Done**, then open
+**System Settings → Privacy & Security**, click **Open Anyway** next to Quran and confirm. You
+only do this once.
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Light theme: Al-Fatihah with the Juz 1 and surah headings](docs/screenshots/reader-light.jpg) | ![Dark theme: Ya-Sin](docs/screenshots/reader-dark.jpg) |
+| **Translation view**, light — the juz card and surah heading | **Dark theme** |
+| ![The juz sidebar and the Juz 2 card](docs/screenshots/juz.jpg) | ![Reading view in sepia: Ya-Sin](docs/screenshots/reading-sepia.jpg) |
+| **Juz by name** — a juz at a time, with its details | **Reading view**, sepia — the Arabic alone, like a mushaf |
+| ![Search for "patience"](docs/screenshots/search.jpg) | ![Reading plans](docs/screenshots/plans.jpg) |
+| **Search** as you type, matches highlighted | **Reading plans** |
 
 It is a reconstruction of [bible-rs](https://github.com/michaelshimeles/bible-rs) (MIT) for the
 Quran: the same architecture (egui 0.36 on Metal, a virtualized reader, a local SQLite
@@ -60,10 +90,10 @@ study store) and the same features, with the Bible's model replaced by the Quran
 - Native menu bar, unified title bar, Metal rendering on the low-power GPU, app icon,
   `scripts/bundle-macos.sh` → `dist/Quran.app` (+ `DMG=1` → `dist/Quran.dmg`).
 
-## Build and run
+## Build from source
 
 ```sh
-cargo run --release -p quran-rs           # the app
+cargo run --release -p quran-rs           # the app (the crate and command are named quran-rs)
 scripts/bundle-macos.sh                   # dist/Quran.app (UNIVERSAL=1, DMG=1, SIGN_IDENTITY=…)
 cargo test --workspace
 ```
@@ -80,12 +110,25 @@ quran-rs export --markdown -o notes.md
 
 Data lives in `~/Library/Application Support/quran-rs/` (`QURAN_RS_HOME` overrides it).
 
+## Releasing
+
+```sh
+# 1. Bump `version` in Cargo.toml, then build the universal app and disk image.
+UNIVERSAL=1 DMG=1 scripts/bundle-macos.sh             # dist/Quran.dmg
+# 2. Tag and publish; the asset must be named Quran.dmg for the download links.
+gh release create v0.1.0 dist/Quran.dmg --title "Quran 0.1.0" --notes "First release"
+```
+
+The website and README link to `releases/latest/download/Quran.dmg`, so they always serve the
+newest release. Update the version shown in `site/index.html` when you release.
+
 ## Layout
 
 | | |
 |---|---|
 | `crates/core` | Quran text and structure (surahs, ayahs, juz, hizb, rukus, pages, sajdas), translations and their library, the catalogue, search, reference parsing, plans, the SQLite study store. No GUI. |
 | `crates/app` | The egui app: reader and its right-to-left layout, sidebar, surah picker, palette, popovers, pages, settings, onboarding, macOS chrome, CLI. |
+| `site` | The download page (static HTML for Vercel; `/download` redirects to the latest DMG). |
 | `xtask` | `cargo run -p xtask -- build-data` rebuilds `data/` from Tanzil's files (digests pinned). |
 | `crates/app/examples/shot.rs` | Renders the app offscreen to a PNG (`QURAN_RS_DEMO="jump:2:255;compare:2:255"`). |
 
