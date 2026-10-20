@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<!-- Must match --bg below (light) and in the script (dark). -->
+	<meta name="theme-color" content="#fbfaf7" />
+	<script>
+		try {
+			const t = localStorage.getItem('theme');
+			if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+				document.documentElement.dataset.theme = 'dark';
+				document.querySelector('meta[name="theme-color"]').content = '#161618';
+			}
+		} catch (e) {}
+	</script>
+	<title>Quran: a fast, native reader for the Mac</title>
+	<meta name="description" content="A fast, native Quran reader for the Mac. The Uthmani text beautifully typeset, read by surah or by juz, with translations, instant search in Arabic and English, and highlights, notes and bookmarks kept on your computer." />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Quran" />
+	<meta property="og:title" content="Quran: a fast, native reader for the Mac" />
+	<meta property="og:description" content="The Uthmani text beautifully typeset, read by surah or by juz, with translations and instant search. Free for macOS." />
+	<meta property="og:image" content="/og.jpg" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Quran: a fast, native reader for the Mac" />
+	<meta name="twitter:image" content="/og.jpg" />
+	<link rel="icon" type="image/png" href="/favicon.png" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Inter:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,500&display=swap" rel="stylesheet" />
+	<style>
+		:root {
+			--bg: #fbfaf7; --fg: #1c1d21; --muted: #6e6f76; --line: #e7e3dc; --card: #fff;
+			--accent: #1e6a57; --gold: #a3874f; --on-accent: #fff; --glow: #1e6a5740;
+			color-scheme: light;
+		}
+		:root[data-theme=dark] {
+			--bg: #161618; --fg: #e6e3dc; --muted: #9c9ca3; --line: #2e2e33; --card: #1e1e21;
+			--accent: #80c9b2; --gold: #c9aa6e; --on-accent: #0f1f1a; --glow: #80c9b233;
+			color-scheme: dark;
+		}
+		* { box-sizing: border-box }
+		html, body { margin: 0 }
+		body {
+			background: var(--bg); color: var(--fg); -webkit-font-smoothing: antialiased;
+			font: 16px/1.55 Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+		}
+		.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px }
+		header { position: relative; text-align: center; padding: 88px 0 40px }
+		.icon { width: 112px; height: 112px; filter: drop-shadow(0 10px 24px #0000002e) }
+		.arabic { font-family: Amiri, serif; font-size: 30px; color: var(--gold); margin: 18px 0 0; line-height: 1.4 }
+		h1 {
+			font-family: Literata, Georgia, serif; font-weight: 500; letter-spacing: -.02em;
+			font-size: clamp(36px, 6vw, 56px); line-height: 1.1; margin: 6px 0 12px;
+		}
+		.lede { color: var(--muted); font-size: 19px; max-width: 580px; margin: 0 auto 32px }
+		.btn {
+			display: inline-flex; align-items: center; gap: 10px; padding: 14px 26px;
+			background: var(--accent); color: var(--on-accent); border-radius: 12px;
+			font-size: 16px; font-weight: 600; text-decoration: none;
+			box-shadow: 0 6px 18px var(--glow); transition: transform .15s ease-out, box-shadow .15s ease-out;
+		}
+		.btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px var(--glow) }
+		.btn:active { transform: scale(.98) }
+		.btn svg { width: 18px; height: 18px }
+		.meta { color: var(--muted); font-size: 13px; margin-top: 14px }
+		.meta a { color: inherit }
+		.shot {
+			margin: 28px auto 0; border: 1px solid var(--line); border-radius: 14px;
+			overflow: hidden; box-shadow: 0 30px 80px #00000024;
+		}
+		.shot img { display: block; width: 100%; height: auto }
+		.shot .dark, :root[data-theme=dark] .shot .light { display: none }
+		:root[data-theme=dark] .shot .dark { display: block }
+		.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; padding: 72px 0 24px }
+		.f { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px }
+		.f h3 { font-family: Literata, Georgia, serif; font-weight: 500; font-size: 20px; margin: 0 0 6px }
+		.f p { color: var(--muted); font-size: 15px; margin: 0 }
+		kbd {
+			font: 500 12px Inter, sans-serif; padding: 1px 6px; border: 1px solid var(--line);
+			border-bottom-width: 2px; border-radius: 5px; background: var(--bg);
+		}
+		.install { max-width: 680px; margin: 48px auto 0; text-align: center }
+		.install h2 { font-family: Literata, Georgia, serif; font-weight: 500; font-size: 24px; margin: 0 0 10px }
+		.install ol { text-align: left; color: var(--muted); font-size: 15px; padding-left: 22px; margin: 0 auto; max-width: 560px }
+		.install li { margin: 6px 0 }
+		.install strong { color: var(--fg); font-weight: 500 }
+		footer { text-align: center; color: var(--muted); font-size: 13px; padding: 56px 0 64px }
+		footer a { color: inherit }
+		.theme-toggle {
+			position: absolute; top: 24px; right: 0; width: 38px; height: 38px; padding: 0;
+			display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+			border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--muted);
+			transition: color .15s, border-color .15s;
+		}
+		.theme-toggle:hover { color: var(--fg) }
+		.theme-toggle:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+		.theme-toggle svg { width: 18px; height: 18px }
+		.theme-toggle .sun, :root[data-theme=dark] .theme-toggle .moon { display: none }
+		:root[data-theme=dark] .theme-toggle .sun { display: block }
+		@media (prefers-reduced-motion: no-preference) {
+			header > * { animation: rise .5s cubic-bezier(.23, 1, .32, 1) both }
+			header > :nth-child(3) { animation-delay: .04s }
+			header > :nth-child(4) { animation-delay: .08s }
+			header > :nth-child(5) { animation-delay: .12s }
+			header > :nth-child(6), header > :nth-child(7) { animation-delay: .16s }
+			header > .shot { animation-delay: .22s }
+			@keyframes rise { from { opacity: 0; transform: translateY(8px) } }
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<header>
+			<button type="button" class="theme-toggle" aria-label="Switch theme" title="Switch theme">
+				<svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+				<svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+			</button>
+			<img class="icon" src="/icon.png" width="112" height="112" alt="Quran app icon" />
+			<p class="arabic" lang="ar" dir="rtl">القرآن الكريم</p>
+			<h1>The Quran, beautifully.</h1>
+			<p class="lede">A fast, native Quran reader for the Mac. The Uthmani text beautifully typeset, read by surah or by juz, with translations, instant search, and highlights, notes and bookmarks kept on your computer.</p>
+			<a class="btn" id="download" href="https://github.com/thezeeshann/quran/releases/latest/download/Quran.dmg">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M6 11l6 6 6-6M5 21h14"/></svg>
+				Download for Mac
+			</a>
+			<div class="meta">Version 0.1.0 · Apple Silicon and Intel · Free · <a href="https://github.com/thezeeshann/quran">Source on GitHub</a></div>
+			<div class="shot">
+				<img class="light" src="/reader-light.jpg" width="1800" height="1209" alt="Al-Fatihah open in Quran, light theme, with the Juz 1 and surah headings" />
+				<img class="dark" src="/reader-dark.jpg" width="1800" height="1209" alt="Ya-Sin open in Quran, dark theme" />
+			</div>
+		</header>
+
+		<section class="features">
+			<div class="f">
+				<h3>Typeset for reading</h3>
+				<p>The Uthmani text in Amiri Quran, set right to left word by word, with every ayah closed by its ornament. Light, sepia and dark themes.</p>
+			</div>
+			<div class="f">
+				<h3>Surah and juz</h3>
+				<p>Browse all 114 surahs or the 30 juz by name. Read a juz at a time, with its details at the top and the next one a click away.</p>
+			</div>
+			<div class="f">
+				<h3>Translations</h3>
+				<p>Saheeh International, Pickthall, Yusuf Ali, transliteration and Urdu built in. Over 100 more in about 45 languages, one click each.</p>
+			</div>
+			<div class="f">
+				<h3>Instant search</h3>
+				<p>Search the translation or the Arabic as you type. Harakat and letter forms are folded, so <span lang="ar" dir="rtl">الصبر</span> finds every form.</p>
+			</div>
+			<div class="f">
+				<h3>Keyboard first</h3>
+				<p><kbd>⌘K</kbd> jumps anywhere, <kbd>←</kbd> <kbd>→</kbd> turn surahs, <kbd>⇧←</kbd> <kbd>⇧→</kbd> turn juz, <kbd>⌘F</kbd> searches, <kbd>1</kbd>–<kbd>6</kbd> highlight.</p>
+			</div>
+			<div class="f">
+				<h3>Yours, and native</h3>
+				<p>Highlights, notes, bookmarks and reading plans stay in a local file on your Mac. Written in Rust: small, quiet and smooth.</p>
+			</div>
+		</section>
+
+		<section class="install">
+			<h2>Installing</h2>
+			<ol>
+				<li>Open <strong>Quran.dmg</strong> and drag <strong>Quran</strong> into <strong>Applications</strong>.</li>
+				<li>Open Quran. The first time, macOS says it can't verify the developer: click <strong>Done</strong>.</li>
+				<li>Go to <strong>System Settings → Privacy &amp; Security</strong>, scroll down, click <strong>Open Anyway</strong> next to Quran, and confirm. You only do this once.</li>
+			</ol>
+		</section>
+
+		<footer>
+			Requires macOS 11 or later on Apple Silicon or Intel.
+			Made by <a href="https://github.com/thezeeshann">@thezeeshann</a> ·
+			<a href="https://github.com/thezeeshann/quran/issues">Support</a><br />
+			Quran text from the <a href="https://tanzil.net">Tanzil Project</a> (CC BY 3.0).
+		</footer>
+	</div>
+	<script>
+		document.querySelector('.theme-toggle').addEventListener('click', () => {
+			const dark = document.documentElement.dataset.theme !== 'dark';
+			document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+			document.querySelector('meta[name="theme-color"]').content = dark ? '#161618' : '#fbfaf7';
+			try { localStorage.setItem('theme', dark ? 'dark' : 'light') } catch (e) {}
+		});
+	</script>
+</body>
+</html>
