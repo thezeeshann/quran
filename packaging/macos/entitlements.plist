@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Hardened-runtime entitlements for Quran. It needs none:
+  - Metal compiles shaders in a system service: no JIT or unsigned-memory exceptions.
+  - The app is not sandboxed, so downloading translations and files the user picks need no
+    entitlement.
+  Add an entitlement only with a note saying which feature needs it.
+-->
+<plist version="1.0">
+<dict/>
+</plist>

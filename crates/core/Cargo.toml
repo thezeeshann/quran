@@ -1,0 +1,23 @@
+[package]
+name = "quran-core"
+description = "Quran text, metadata, translations, search, references and study storage for quran-rs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = ["bundled", "online"]
+# Embed the Quran text and the bundled translations from data/ into the binary.
+bundled = []
+# Downloading more translations from the Tanzil catalogue (HTTPS).
+online = ["dep:ureq"]
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+memchr.workspace = true
+zstd.workspace = true
+rusqlite = { version = "0.40", features = ["bundled"] }
+ureq = { version = "3", default-features = false, features = ["rustls", "gzip"], optional = true }
