@@ -11,6 +11,7 @@ English, and highlights, notes, bookmarks, reading history and plans kept on you
 <p align="center">
 <a href="https://github.com/thezeeshann/quran/releases/latest/download/Quran.dmg"><b>Download for Mac</b></a>
 · Apple Silicon and Intel · macOS 11 or later · Free
+· <a href="https://the-queran.vercel.app">Website</a>
 </p>
 
 ![Quran, Al-Fatihah in the light theme](docs/screenshots/reader-light.jpg)
@@ -21,7 +22,11 @@ Get **Quran.dmg** from the [latest release](https://github.com/thezeeshann/quran
 open it and drag **Quran** into **Applications**. The app isn't notarized by Apple yet, so the
 first time you open it macOS says it can't verify the developer: click **Done**, then open
 **System Settings → Privacy & Security**, click **Open Anyway** next to Quran and confirm. You
-only do this once.
+only do this once. Or skip the dialog by clearing the download flag in Terminal:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Quran.app
+```
 
 ## Screenshots
 

@@ -20,12 +20,15 @@
 	<meta property="og:site_name" content="Quran" />
 	<meta property="og:title" content="Quran: a fast, native reader for the Mac" />
 	<meta property="og:description" content="The Uthmani text beautifully typeset, read by surah or by juz, with translations and instant search. Free for macOS." />
-	<meta property="og:image" content="/og.jpg" />
+	<link rel="canonical" href="https://the-queran.vercel.app/" />
+	<meta property="og:url" content="https://the-queran.vercel.app/" />
+	<meta property="og:image" content="https://the-queran.vercel.app/og.jpg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="Quran: a fast, native reader for the Mac" />
-	<meta name="twitter:image" content="/og.jpg" />
+	<meta name="twitter:description" content="The Uthmani text beautifully typeset, read by surah or by juz, with translations and instant search. Free for macOS." />
+	<meta name="twitter:image" content="https://the-queran.vercel.app/og.jpg" />
 	<link rel="icon" type="image/png" href="/favicon.png" />
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -88,6 +91,12 @@
 		.install ol { text-align: left; color: var(--muted); font-size: 15px; padding-left: 22px; margin: 0 auto; max-width: 560px }
 		.install li { margin: 6px 0 }
 		.install strong { color: var(--fg); font-weight: 500 }
+		.install .alt { color: var(--muted); font-size: 14px; margin: 18px auto 0; max-width: 560px }
+		.install code {
+			display: inline-block; margin-top: 8px; padding: 6px 10px; border: 1px solid var(--line);
+			border-radius: 8px; background: var(--card); color: var(--fg); font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+			user-select: all;
+		}
 		footer { text-align: center; color: var(--muted); font-size: 13px; padding: 56px 0 64px }
 		footer a { color: inherit }
 		.theme-toggle {
@@ -168,6 +177,7 @@
 				<li>Open Quran. The first time, macOS says it can't verify the developer: click <strong>Done</strong>.</li>
 				<li>Go to <strong>System Settings → Privacy &amp; Security</strong>, scroll down, click <strong>Open Anyway</strong> next to Quran, and confirm. You only do this once.</li>
 			</ol>
+			<p class="alt">Or skip the dialog: after dragging Quran into Applications, run this in Terminal.<br /><code>xattr -dr com.apple.quarantine /Applications/Quran.app</code></p>
 		</section>
 
 		<footer>
