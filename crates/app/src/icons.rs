@@ -672,3 +672,44 @@ pub fn dot(p: &Painter, center: Pos2, radius: f32, c: Color32) {
 pub fn icon_rect(center: Pos2, size: f32) -> Rect {
     Rect::from_center_size(center, vec2(size, size))
 }
+
+/// A play triangle (filled, with rounded corners).
+pub fn play(p: &Painter, r: Rect, c: Color32) {
+    let g = Grid::new(p, r, c);
+    let pts = [(6.75, 4.5), (15.5, 10.0), (6.75, 15.5)];
+    g.fill(&pts);
+    g.closed(&pts);
+}
+
+/// Two bars (pause).
+pub fn pause(p: &Painter, r: Rect, c: Color32) {
+    let g = Grid::new(p, r, c);
+    for x in [5.75, 11.25] {
+        let bar = Rect::from_min_max(g.p(x, 4.25), g.p(x + 3.0, 15.75));
+        p.rect_filled(bar, 1.0 * g.scale, c);
+    }
+}
+
+/// A play triangle in a circle (play an ayah's recitation).
+pub fn play_circle(p: &Painter, r: Rect, c: Color32) {
+    let g = Grid::new(p, r, c);
+    g.circle(10.0, 10.0, 7.25);
+    let pts = [(8.25, 6.75), (13.25, 10.0), (8.25, 13.25)];
+    g.fill(&pts);
+    g.closed(&pts);
+}
+
+/// A speaker with sound waves (an ayah being recited). `phase` (0–1) animates the waves.
+pub fn speaker(p: &Painter, r: Rect, c: Color32, phase: f32) {
+    let g = Grid::new(p, r, c);
+    let body = [(3.25, 7.75), (6.25, 7.75), (10.0, 4.5), (10.0, 15.5), (6.25, 12.25), (3.25, 12.25)];
+    g.fill(&[(3.25, 7.75), (6.25, 7.75), (6.25, 12.25), (3.25, 12.25)]);
+    g.fill(&[(6.25, 7.75), (10.0, 4.5), (10.0, 15.5), (6.25, 12.25)]);
+    g.closed(&body);
+    for (i, rad) in [3.0_f32, 6.0].into_iter().enumerate() {
+        let a = (0.45 + 0.55 * ((phase * std::f32::consts::TAU - i as f32 * 1.2).sin() * 0.5 + 0.5)).min(1.0);
+        let w = Grid { color: c.gamma_multiply(a), ..Grid::new(p, r, c) };
+        let pts: Vec<Pos2> = Grid::arc(10.5, 10.0, rad, -0.85, 0.85).map(|(x, y)| w.p(x, y)).collect();
+        w.polyline(pts, false);
+    }
+}

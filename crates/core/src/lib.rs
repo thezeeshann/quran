@@ -7,6 +7,7 @@ pub mod copy;
 pub mod library;
 pub mod meta;
 pub mod plans;
+pub mod recitation;
 pub mod reference;
 pub mod search;
 pub mod study;

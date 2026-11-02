@@ -74,6 +74,12 @@ pub enum Action {
     /// Make an image of the selected ayahs to share.
     ShareImage,
     Compare,
+    /// Recite an ayah (fetched online); the selected ayah or, with none, the reading position.
+    PlayAyah(AyahRef),
+    PlaySelected,
+    /// Pause or resume the recitation; stop it (which closes the player).
+    TogglePlayback,
+    StopPlayback,
     ClearSelection,
     SelectNext,
     SelectPrev,

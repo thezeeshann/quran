@@ -4,7 +4,7 @@
 
 <p align="center">
 A fast, native Quran reader for the Mac, written in Rust: the Uthmani text beautifully typeset,
-read by <b>surah</b> or by <b>juz</b>, with translations beneath each ayah, instant search in Arabic and
+read by <b>surah</b> or by <b>juz</b>, with translations beneath each ayah, recitation of any ayah, instant search in Arabic and
 English, and highlights, notes, bookmarks, reading history and plans kept on your computer.
 </p>
 
@@ -60,6 +60,14 @@ study store) and the same features, with the Bible's model replaced by the Quran
   and pages); hizb quarters and sajdas in the margin.
 - Separate Arabic and translation sizes and line spacing, line length, light / sepia / dark
   themes (⌘⇧L), five accent colours, focus mode (⌃⌘F) with reading progress. Remembers where you were.
+
+**Recitation**
+- Hover over any ayah, in any surah, and press **▶** in the margin (or **P**, or **Play Recitation** in
+  the ayah menu) to hear it recited by **Sheikh Mishary Rashid Alafasy** or **Sheikh Yasser
+  Al-Dosari** (choose in Settings › Reading). A small player shows the surah, ayah and progress, with
+  pause and stop; it closes by itself when the ayah ends (Esc closes it too).
+- The audio is streamed per ayah and never stored, so it needs an internet connection. Offline,
+  nothing plays and the app says so.
 
 **Navigation — surah and juz**
 - Sidebar with a **Surahs | Juz** switch: 114 surahs (number in an eight-pointed star, Arabic
@@ -144,6 +152,8 @@ newest release. Update the version shown in `site/index.html` when you release.
   notice in `data/quran/NOTICE.txt`. Metadata: Tanzil `quran-data.xml`.
 - **Translations**: from the Tanzil Project's collection, for non-commercial use under their own
   terms; each one's notice is shown on the Translations page.
+- **Recitation audio**: streamed from [EveryAyah](https://everyayah.com) (Mishary Rashid
+  Alafasy and Yasser Al-Dosari, 128 kbps); not included in the app.
 - **Fonts**: Amiri Quran and Amiri (Khaled Hosny), Noto Naskh Arabic, Literata and Inter — all
   SIL Open Font License 1.1.
 - **Code**: MIT. Portions derived from bible-rs, © 2026 Micky, MIT.

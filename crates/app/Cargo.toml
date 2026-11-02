@@ -28,6 +28,8 @@ eframe = { version = "0.36", default-features = false, features = [
     "x11",
 ] }
 rfd = "0.17"
+# Recitation playback (MP3 decoded in Rust, played through CoreAudio).
+rodio = { version = "0.23", default-features = false, features = ["playback", "mp3"] }
 dirs = "6"
 
 # PNG encoding for shared ayah images.

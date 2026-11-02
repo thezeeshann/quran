@@ -44,6 +44,8 @@ pub struct Env<'a> {
     pub columns: &'a [String],
     /// Whether arrow/page keys should scroll the reader (no text field has focus).
     pub keyboard: bool,
+    /// The ayah being recited, and whether it is sounding (not loading or paused).
+    pub playing: Option<(AyahRef, bool)>,
     /// Height of the toolbar floating over the reader's top edge.
     pub toolbar: f32,
     /// The reader's width is changing frame by frame (the sidebar sliding): typeset only what is
@@ -85,6 +87,9 @@ pub struct Reader {
     pub layouts: u64,
     /// The column's left edge and width this frame.
     pub column_x: (f32, f32),
+    /// The ayah last under the pointer; its play button stays while the pointer crosses the
+    /// margin to reach it.
+    hovered: Option<AyahRef>,
 }
 
 impl Reader {
@@ -115,6 +120,7 @@ impl Reader {
             frames: 0,
             layouts: 0,
             column_x: (0.0, 0.0),
+            hovered: None,
         };
         if at.ayah > 1 || sections()[section_of(at) as usize].from != 1 {
             r.pending_jump = Some((at, false));
@@ -375,6 +381,8 @@ impl Reader {
         let mut under_toolbar = false;
         let mut in_view: Vec<(u8, u16)> = Vec::new();
         let mut button_hit: Option<AyahRef> = None;
+        let mut play_hit: Option<AyahRef> = None;
+        let mut keep_hover = false;
         let (first, last) = self.bounds();
         while let Some(si) = s {
             if y > rect.bottom() {
@@ -396,6 +404,9 @@ impl Reader {
                 let is_selected = selected.contains(&r);
                 if is_selected {
                     fills.push(p.selection);
+                }
+                if env.playing.is_some_and(|(pa, _)| pa == r) && !is_selected {
+                    fills.push(p.accent_soft.gamma_multiply(0.55));
                 }
                 if let (Some((fv, _)), Some(al)) = (self.flash, flash_alpha)
                     && fv == r
@@ -535,6 +546,38 @@ impl Reader {
                     if pointer.is_some_and(|pt| nr.expand(4.0).contains(pt)) {
                         marker_hit = Some(r);
                     }
+                    x += 24.0;
+                }
+                // Recitation: a play button beside the ayah under the pointer (anywhere along
+                // its lines, margin included, so the pointer can travel to it), and a speaker
+                // beside the ayah being recited.
+                let playing = env.playing.filter(|(pa, _)| *pa == r);
+                let in_margin = pointer.is_some_and(|pt| {
+                    pt.y > toolbar_bottom
+                        && pt.y >= y + a.top
+                        && pt.y < y + a.bottom
+                        && pt.x >= geom.x0 + geom.col_w - 4.0
+                        && pt.x <= x + 40.0
+                });
+                let sticky = self.hovered == Some(r) && in_margin;
+                keep_hover |= sticky;
+                let row_hovered = hit == Some(r) || sticky;
+                if playing.is_some() || row_hovered {
+                    let pr = Rect::from_center_size(pos2(x + 10.0, cy), vec2(18.0, 18.0));
+                    let over = pointer.is_some_and(|pt| pr.expand(5.0).contains(pt));
+                    if over {
+                        painter.rect_filled(pr.expand(3.0), CornerRadius::same(7), p.fill);
+                        play_hit = Some(r);
+                    }
+                    match playing {
+                        Some((_, true)) => {
+                            let phase = (now * 1.1).fract() as f32;
+                            icons::speaker(&painter, pr, p.accent, phase);
+                            ui.ctx().request_repaint();
+                        }
+                        Some((_, false)) => icons::play_circle(&painter, pr, p.accent),
+                        None => icons::play_circle(&painter, pr, if over { p.accent } else { p.ink_3 }),
+                    }
                 }
             }
             if first_visible.is_none() && y + l.height > reading_line {
@@ -546,6 +589,7 @@ impl Reader {
         if let Some(fv) = first_visible {
             self.location = fv;
         }
+        self.hovered = hit.or(if keep_hover { self.hovered } else { None });
         self.under_toolbar = under_toolbar;
         if let Some((_, n)) = in_view.iter().find(|(su, _)| *su == self.location.surah) {
             self.furthest_in_view = *n;
@@ -573,13 +617,15 @@ impl Reader {
         }
 
         // Interaction.
-        if marker_hit.is_some() || hit.is_some() || button_hit.is_some() {
+        if marker_hit.is_some() || hit.is_some() || button_hit.is_some() || play_hit.is_some() {
             ui.ctx().set_cursor_icon(CursorIcon::PointingHand);
         }
         if resp.clicked() {
             if let Some(to) = button_hit {
                 self.selection = None;
                 actions.push(Action::Jump { to, flash: false });
+            } else if let Some(v) = play_hit {
+                actions.push(Action::PlayAyah(v));
             } else if let Some(v) = marker_hit {
                 actions.push(Action::EditNote(v));
             } else if let Some(v) = hit {
@@ -590,6 +636,7 @@ impl Reader {
             }
         }
         if resp.double_clicked()
+            && play_hit.is_none()
             && let Some(v) = hit
         {
             self.selection = Some((v, v));

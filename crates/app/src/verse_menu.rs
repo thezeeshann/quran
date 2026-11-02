@@ -1,5 +1,5 @@
-//! The ayah menu: right-click an ayah for the highlight swatches (1–6, 0 clears), note, bookmark,
-//! copy, share, compare and more translations.
+//! The ayah menu: right-click an ayah for the highlight swatches (1–6, 0 clears), recitation,
+//! note, bookmark, copy, share, compare and more translations.
 //!
 //! Ported from bible-rs (MIT).
 
@@ -49,6 +49,8 @@ impl VerseMenu {
             action,
         };
         vec![
+            item(icons::play_circle, "Play Recitation", "P", Some(Action::PlaySelected)),
+            Line::Separator,
             item(
                 icons::note,
                 if study.note(first).is_some() { "Edit Note…" } else { "Add Note…" },

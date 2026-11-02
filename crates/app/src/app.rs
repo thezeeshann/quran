@@ -63,6 +63,8 @@ pub struct Settings {
     pub plan_reminder: bool,
     /// The first-launch screens are done.
     pub onboarded: bool,
+    /// Whose voice recites an ayah.
+    pub reciter: quran_core::recitation::Reciter,
 }
 
 impl Default for Settings {
@@ -92,6 +94,7 @@ impl Default for Settings {
             backup_weekly: false,
             share: Default::default(),
             onboarded: false,
+            reciter: Default::default(),
         }
     }
 }
@@ -194,6 +197,8 @@ impl History {
 pub enum TaskResult {
     Catalog(Result<Vec<CatalogEntry>, String>),
     Downloaded(String, Result<Box<quran_core::Translation>, String>),
+    /// An ayah's recitation audio, for request n.
+    Recitation(u64, Result<Vec<u8>, quran_core::recitation::FetchError>),
 }
 
 pub struct Startup {
@@ -244,6 +249,8 @@ pub struct QuranApp {
     warmed: bool,
     reading: crate::reading::Tracker,
     verse_menu: Option<crate::verse_menu::VerseMenu>,
+    /// Recitation of one ayah at a time.
+    pub player: crate::player::Player,
     note_popover: Option<NotePopover>,
     /// The first-launch screens, until they are done.
     onboarding: Option<crate::onboarding::Onboarding>,
@@ -398,6 +405,7 @@ impl QuranApp {
             saved: (serde_json::to_string(&settings).unwrap_or_default(), 0.0),
             warmed: false,
             reading: Default::default(),
+            player: Default::default(),
             verse_menu: None,
             note_popover: None,
             onboarding,
@@ -489,6 +497,11 @@ impl QuranApp {
                             }
                         }
                         Err(e) => self.toast(ctx, format!("Couldn't download {id}: {e}")),
+                    }
+                }
+                TaskResult::Recitation(n, r) => {
+                    if let Some(msg) = self.player.on_audio(n, r) {
+                        self.toast(ctx, msg);
                     }
                 }
             }
@@ -791,9 +804,24 @@ impl QuranApp {
                 self.sidebar.query.clear();
                 self.reader.selection = None;
             }
+            Action::PlayAyah(at) => {
+                if self.player.current() == Some(at) {
+                    self.player.toggle_pause();
+                } else {
+                    self.player.start(ctx, at, self.settings.reciter, &self.task_tx);
+                }
+            }
+            Action::PlaySelected => {
+                let at = self.selection_or_location()[0];
+                self.apply_one(ctx, Action::PlayAyah(at));
+            }
+            Action::TogglePlayback => self.player.toggle_pause(),
+            Action::StopPlayback => self.player.stop(),
             Action::ClearSelection => {
                 if self.sidebar.searching() {
                     self.apply_one(ctx, Action::ClearSearch);
+                } else if self.player.active() && self.reader.selection.is_none() {
+                    self.player.stop();
                 } else {
                     self.reader.selection = None;
                 }
@@ -989,6 +1017,7 @@ impl QuranApp {
                 }
             }
             "select" => self.reader.set_selection(ayah()),
+            "play" => actions.extend(ayah().map(Action::PlayAyah)),
             "scroll" => self.reader.anchor.offset += arg.parse::<f32>().unwrap_or(0.0),
             "palette" => self.palette = Some(CommandPalette::with_query(arg)),
             "search" => actions.push(Action::OpenSearch(Some(arg.to_string()))),
@@ -1745,7 +1774,8 @@ impl QuranApp {
 
     /// Toasts at the bottom centre of the main area, 24 pt above the window edge: inverse
     /// capsules 40 high. Messages go after 4 s.
-    fn toasts(&mut self, ctx: &egui::Context) {
+    /// The toasts, `lift` points above the bottom (over the recitation player).
+    fn toasts(&mut self, ctx: &egui::Context, lift: f32) {
         let now = ctx.input(|i| i.time);
         self.toasts.retain(|(_, t)| now - t < 4.0);
         let p = self.settings.theme.palette();
@@ -1758,7 +1788,7 @@ impl QuranApp {
         for id in &self.downloading {
             msgs.push(format!("Downloading {id}…"));
         }
-        let mut y = area.bottom() - 24.0;
+        let mut y = area.bottom() - 24.0 - lift;
         for (i, m) in msgs.iter().enumerate() {
             let id = Id::new(("toast", i));
             let resp = egui::Area::new(id)
@@ -2161,6 +2191,10 @@ impl eframe::App for QuranApp {
                 theme: self.settings.theme,
                 columns: &cols,
                 keyboard,
+                playing: self
+                    .player
+                    .current()
+                    .map(|at| (at, self.player.state() == Some(crate::player::State::Playing))),
                 toolbar: top,
                 resizing: self.sidebar_motion.moving(),
             };
@@ -2299,7 +2333,14 @@ impl eframe::App for QuranApp {
         self.shortcuts_help(&ctx, &mut actions);
         self.plan_reminder(&ctx);
         self.auto_backup(&ctx);
-        self.toasts(&ctx);
+        self.player.tick(&ctx);
+        let player_h = {
+            let area = if self.main_area.is_positive() { self.main_area } else { ctx.content_rect() };
+            let dark = self.settings.theme == Theme::Dark;
+            let reduce = self.settings.reduce_motion;
+            self.player.show(&ctx, p, dark, area, reduce, &mut actions)
+        };
+        self.toasts(&ctx, player_h);
         self.atlas_seen = Some(ctx.fonts(|f| (*f.options(), f.font_atlas_fill_ratio())));
         self.end_frame(&ctx, frame, actions);
     }

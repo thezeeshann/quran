@@ -1043,6 +1043,20 @@ fn reading(ui: &mut Ui, library: &Library, settings: &mut Settings, actions: &mu
     });
     ui.add_space(24.0);
 
+    group_title(ui, p, "Recitation");
+    let reciter = &mut settings.reciter;
+    rows_card(ui, p, &[48.0], |ui, _, r| {
+        let right = pos2(r.right() - 16.0, r.center().y);
+        row_label(ui, p, r, "Reciter", Some("Hover an ayah and press ▶ · needs internet"));
+        let all = quran_core::recitation::Reciter::ALL;
+        let labels: Vec<&str> = all.iter().map(|r| r.name()).collect();
+        let selected = all.iter().position(|r| r == reciter).unwrap_or(0);
+        if let Some(k) = widgets::segmented_fit(ui, p, right, ui.id().with("reciter"), &labels, selected) {
+            *reciter = all[k];
+        }
+    });
+    ui.add_space(24.0);
+
     let (r, _) = ui.allocate_exact_size(vec2(width, 32.0), Sense::hover());
     ui.painter().text(
         r.left_center(),

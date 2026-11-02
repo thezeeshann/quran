@@ -154,7 +154,7 @@ const fn fixed(
 
 pub const GROUPS: [&str; 3] = ["Navigate", "Ayahs", "View"];
 
-pub const ALL: [Shortcut; 21] = [
+pub const ALL: [Shortcut; 22] = [
     bindable("jump", "Navigate", "Go to an ayah, surah or juz", Chord::cmd(Key::K)),
     fixed("surah", "Navigate", "Previous / next surah", &["←", "→"]),
     fixed("juz", "Navigate", "Previous / next juz", &["⇧", "←", "⇧", "→"]),
@@ -163,6 +163,7 @@ pub const ALL: [Shortcut; 21] = [
     bindable("sidebar", "Navigate", "Surahs & study sidebar", Chord::cmd(Key::B)),
     fixed("ayah", "Ayahs", "Next / previous ayah", &["J", "K"]),
     fixed("highlight", "Ayahs", "Highlight colour · clear", &["1–6", "0"]),
+    bindable("play", "Ayahs", "Play / pause recitation", Chord::new(Key::P)),
     bindable("note", "Ayahs", "Note", Chord::new(Key::N)),
     bindable("bookmark", "Ayahs", "Bookmark", Chord::new(Key::B)),
     fixed("copy-arabic", "Ayahs", "Copy the Arabic", &["⌘", "C"]),
@@ -184,6 +185,7 @@ pub fn action(id: &str) -> Option<Action> {
         "jump" => Action::OpenPalette,
         "search" => Action::OpenSearch(None),
         "sidebar" => Action::ToggleSidebar,
+        "play" => Action::PlaySelected,
         "note" => Action::EditSelectedNote,
         "bookmark" => Action::ToggleBookmark,
         "copy" => Action::Copy,

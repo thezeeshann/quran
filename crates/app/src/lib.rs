@@ -19,6 +19,7 @@ pub mod note_popover;
 pub mod onboarding;
 pub mod pages;
 pub mod palette;
+pub mod player;
 pub mod reader;
 pub mod reading;
 pub mod settings_ui;
